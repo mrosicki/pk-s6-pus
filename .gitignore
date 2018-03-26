@@ -1,0 +1,12 @@
+*
+!/**/
+!*.*
+
+.idea/
+cmake-build-debug/
+
+
+Makefile
+*.o
+
+
