@@ -5,8 +5,7 @@
 .idea/
 cmake-build-debug/
 
-
-Makefile
+!Makefile
 *.o
 
 
