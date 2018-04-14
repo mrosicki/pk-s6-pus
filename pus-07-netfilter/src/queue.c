@@ -23,17 +23,17 @@ static u_int32_t print_packet(struct nfq_data *tb);
 
 int main(int argc, char **argv) {
 
-    struct nfq_handle       *h; /* Uchwyt polaczenia. */
-    struct nfq_q_handle     *qh; /* Uchwyt kolejki. */
-    int                     fd; /* Deskryptor gniazda Netlink. */
-    int                     rv; /* Wartosc zwracana przez funkcje. */
-    int                     queue_num; /* Numer kolejki. */
+    struct nfq_handle   *h;         /* Uchwyt polaczenia. */
+    struct nfq_q_handle *qh;        /* Uchwyt kolejki. */
+    int                 fd;         /* Deskryptor gniazda Netlink. */
+    int                 rv;         /* Wartosc zwracana przez funkcje. */
+    int                 queue_num;  /* Numer kolejki. */
     /*
      * Bufor dla pakietu. Specyfikacja trybutu gcc - aligned.
      * Wartosc atrybutu nie zostala okreslona = kompilator jest
      * odpowiedzialny za wyrownanie typu.
      */
-    char buf[4096] __attribute__((aligned));
+    char                buf[4096] __attribute__((aligned));
 
 
     /* Pobranie uchwytu polaczenia z podsystemem jadra odpowiedzialnym
@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
 
     /* Powiązanie z rodziną AF_INET: */
     if (nfq_bind_pf(h, AF_INET) < 0) {
-        fprintf(stderr, "nfq_bind_pf() failed!\n");
+        fprintf(stderr, "nfq_bind_pf() failqed!\n");
         exit(EXIT_FAILURE);
     }
 
@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
      * okreslenie funkcji callback:
      */
     queue_num = 5;
-    qh = nfq_create_queue(h,  queue_num, &callback, NULL);
+    qh        = nfq_create_queue(h, queue_num, &callback, NULL);
     if (!qh) {
         fprintf(stderr, "nfq_create_queue() failed!\n");
         exit(EXIT_FAILURE);
@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
     }
 
     fprintf(stdout, "Using queue %d and mode NFQNL_COPY_PACKET.\n"
-            "Waiting for packets...\n", queue_num);
+                    "Waiting for packets...\n", queue_num);
 
     /* Pobranie deskryptora gniazda: */
     fd = nfq_fd(h);
@@ -125,14 +125,14 @@ static int callback(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 
 static u_int32_t print_packet(struct nfq_data *tb) {
 
-    int                             id = 0; /* ID pakietu. */
-    struct nfqnl_msg_packet_hdr     *ph; /* Naglowek meta-danych. */
-    struct nfqnl_msg_packet_hw      *hwph; /* Adres warstwy lacza anych. */
-    u_int32_t                       ifi; /* Indeks interfejsu. */
-    int                             retval; /* Wartosc zwracana. */
-    char                            *data; /* Bufor na payload. */
-    char                            *hook; /* Punkt zaczepienia Netf. */
-    char                            ifname[IF_NAMESIZE]; /* Nazwa interf. */
+    int                         id = 0; /* ID pakietu. */
+    struct nfqnl_msg_packet_hdr *ph; /* Naglowek meta-danych. */
+    struct nfqnl_msg_packet_hw  *hwph; /* Adres warstwy lacza anych. */
+    u_int32_t                   ifi; /* Indeks interfejsu. */
+    int                         retval; /* Wartosc zwracana. */
+    char                        *data; /* Bufor na payload. */
+    char                        *hook; /* Punkt zaczepienia Netf. */
+    char                        ifname[IF_NAMESIZE]; /* Nazwa interf. */
 
     /* Naglowek z meta-danymi: */
     ph = nfq_get_msg_packet_hdr(tb);
@@ -146,23 +146,23 @@ static u_int32_t print_packet(struct nfq_data *tb) {
         fprintf(stdout, "Netfilter Hook: ");
 
         switch (ph->hook) {
-        case NF_IP_PRE_ROUTING:
-            hook = "PREROUTING";
-            break;
-        case NF_IP_LOCAL_IN:
-            hook = "INPUT";
-            break;
-        case NF_IP_FORWARD:
-            hook = "FORWARD";
-            break;
-        case NF_IP_LOCAL_OUT:
-            hook = "OUTPUT";
-            break;
-        case NF_IP_POST_ROUTING:
-            hook = "POSTROUTING";
-            break;
-        default:
-            hook = "UNKNOWN";
+            case NF_IP_PRE_ROUTING:
+                hook = "PREROUTING";
+                break;
+            case NF_IP_LOCAL_IN:
+                hook = "INPUT";
+                break;
+            case NF_IP_FORWARD:
+                hook = "FORWARD";
+                break;
+            case NF_IP_LOCAL_OUT:
+                hook = "OUTPUT";
+                break;
+            case NF_IP_POST_ROUTING:
+                hook = "POSTROUTING";
+                break;
+            default:
+                hook = "UNKNOWN";
         }
 
         fprintf(stdout, "'%s',\n", hook);
@@ -175,9 +175,9 @@ static u_int32_t print_packet(struct nfq_data *tb) {
         int i, hlen = ntohs(hwph->hw_addrlen);
 
         fprintf(stdout, "Source Address: '");
-        for (i = 0; i < hlen-1; i++)
+        for (i = 0; i < hlen - 1; i++)
             fprintf(stdout, "%02x:", hwph->hw_addr[i]);
-        fprintf(stdout, "%02x', ", hwph->hw_addr[hlen-1]);
+        fprintf(stdout, "%02x', ", hwph->hw_addr[hlen - 1]);
     }
 
 
