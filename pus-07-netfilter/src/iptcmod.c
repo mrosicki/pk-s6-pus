@@ -33,7 +33,7 @@ struct rule {
      * w argumencie wywolania liczby zostanie odjete 1 (w funkcji parse()):
      */
     int             rule_num;
-    const char      *policy;
+    const char      *policy; /*Wartosc polityki (DROP lub ACCEPT)*/
 };
 
 /* Funkcja odpowiedzialna za zaalokowanie obszaru pamieci o rozmiarze 'size'. */
@@ -222,7 +222,7 @@ struct rule* parse(int argc, char ** argv) {
                 break;
             }
 
-            argv++; /* Przejscie do argumentu po '-D'. */
+            argv++; /* Przejscie do argumentu po '-P'. */
             if ((*argv == NULL) || (**argv == '-')) {
                 parse_error("Expecting <chain> after -P\n",
                             &error);
@@ -253,57 +253,21 @@ struct rule* parse(int argc, char ** argv) {
             strcpy(ptr, *argv);
             r->policy = ptr;
 
-            /* sprawdzenie poprawnosci lancucha dla tabeli */
-            /* dana tabela ma okreslone lancuchy wbudowane */
-            /* polityka moze byc tylko DROP lub ACCEPT*/
+            /* polityka ma przyjmowac wartosci DROP lub ACCEPT*/
             int flag=0;
 
-            if(!strcmp(r->table,"filter")){
-                if(!(strcmp(r->chain,"INPUT"))||!(strcmp(r->chain,"OUTPUT"))||!(strcmp(r->chain,"FORWARD"))){
-                    if(!strcmp(r->policy,"ACCEPT")||!strcmp(r->policy,"DROP")){
-                        flag = 1;
-                    } else {
-                        flag = 0;
-                    }
-                }
+            if(!strcmp(r->policy,"ACCEPT")||!strcmp(r->policy,"DROP")){
+                flag = 1;
+            } else {
+                flag = 0;
             }
-            if(!strcmp(r->table,"nat")){
-                if(!(strcmp(r->chain,"PREROUTING"))||!(strcmp(r->chain,"POSTROUTING"))||!(strcmp(r->chain,"OUTPUT"))){
-                    if(!strcmp(r->policy,"ACCEPT")||!strcmp(r->policy,"DROP")){
-                        flag = 1;
-                    } else {
-                        flag = 0;
-                    }
-                }
-            }
-            if(!strcmp(r->table,"mangle")){
-                if(!(strcmp(r->chain,"PREROUTING"))||!(strcmp(r->chain,"POSTROUTING"))||!(strcmp(r->chain,"OUTPUT"))||!(strcmp(r->chain,"OUTPUT"))||!(strcmp(r->chain,"INPUT"))){
-                    if(!strcmp(r->policy,"ACCEPT")||!strcmp(r->policy,"DROP")){
-                        flag = 1;
-                    } else {
-                        flag = 0;
-                    }
-                }
-            }
-            if(!strcmp(r->table,"raw")){
-                if(!(strcmp(r->chain,"PREROUTING"))||!(strcmp(r->chain,"OUTPUT"))){
-                    if(!strcmp(r->policy,"ACCEPT")||!strcmp(r->policy,"DROP")){
-                        flag = 1;
-                    } else {
-                        flag = 0;
-                    }
-                }
-            }
-            
-            
-
 
             if ((flag) == 0) {
                 parse_error("Invalid <policy for chain>\n", &error);
                 break;
             }
-
-            /* Regula DELETE_RULE poprawna: */
+            
+            /* Regula CHANGE_POLICY poprawna: */
             r->operation = CHANGE_POLICY;
 
         }else if (!strcmp(*argv, "-h")) { /* Pomoc. */
@@ -390,8 +354,15 @@ void change_policy(struct xtc_handle *h, struct rule* r) {
                 r->chain, r->table);
         exit(EXIT_FAILURE);
     }
+    /* Sprawdzenie czy podany lancuch w tablicy jest wbudowany */
+    retval = iptc_builtin(r->chain,h);
+    if (!retval) {
+        fprintf(stderr, "Chain '%s' is not built-in for table '%s'!\n",
+                r->chain, r->table);
+        exit(EXIT_FAILURE);
+    }
 
-    /* Usuniecie reguly o okreslonym numerze: */
+    /* Zmiana polityki w lancuchu: */
     retval = iptc_set_policy(r->chain, r->policy,NULL, h);
     if (!retval) {
         fprintf(stderr, "iptc_set_policy(): %s\n",
@@ -459,7 +430,7 @@ int main(int argc, char **argv) {
         delete_rule(h, r);
     } else if (r->operation == NEW_CHAIN) { /* Utworzenie lancucha. */
         create_chain(h, r);
-    } else if (r->operation == CHANGE_POLICY) {
+    } else if (r->operation == CHANGE_POLICY) { /* Zmiana polityki */
         change_policy(h, r);
     }
 
