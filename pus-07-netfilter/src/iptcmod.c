@@ -33,7 +33,7 @@ struct rule {
      * w argumencie wywolania liczby zostanie odjete 1 (w funkcji parse()):
      */
     int             rule_num;
-    const char      *policy;
+    const char      *policy; /* Rodzaj polityki (DROP lub ACCEPT) */
 };
 
 /* Funkcja odpowiedzialna za zaalokowanie obszaru pamieci o rozmiarze 'size'. */
@@ -222,7 +222,7 @@ struct rule* parse(int argc, char ** argv) {
                 break;
             }
 
-            argv++; /* Przejscie do argumentu po '-D'. */
+            argv++; /* Przejscie do argumentu po '-P'. */
             if ((*argv == NULL) || (**argv == '-')) {
                 parse_error("Expecting <chain> after -P\n",
                             &error);
@@ -255,7 +255,7 @@ struct rule* parse(int argc, char ** argv) {
 
             /* sprawdzenie poprawnosci lancucha dla tabeli */
             /* dana tabela ma okreslone lancuchy wbudowane */
-            /* polityka moze byc tylko DROP lub ACCEPT*/
+            /* polityka moze miec tylko wartosc DROP lub ACCEPT*/
             int flag=0;
 
             if(!strcmp(r->table,"filter")){
@@ -303,7 +303,7 @@ struct rule* parse(int argc, char ** argv) {
                 break;
             }
 
-            /* Regula DELETE_RULE poprawna: */
+            /* Regula CHANGE_POLICY poprawna: */
             r->operation = CHANGE_POLICY;
 
         }else if (!strcmp(*argv, "-h")) { /* Pomoc. */
@@ -391,7 +391,7 @@ void change_policy(struct xtc_handle *h, struct rule* r) {
         exit(EXIT_FAILURE);
     }
 
-    /* Usuniecie reguly o okreslonym numerze: */
+    /* Ustawienie polityki dla okreslonego lancucha: */
     retval = iptc_set_policy(r->chain, r->policy,NULL, h);
     if (!retval) {
         fprintf(stderr, "iptc_set_policy(): %s\n",
@@ -459,7 +459,7 @@ int main(int argc, char **argv) {
         delete_rule(h, r);
     } else if (r->operation == NEW_CHAIN) { /* Utworzenie lancucha. */
         create_chain(h, r);
-    } else if (r->operation == CHANGE_POLICY) {
+    } else if (r->operation == CHANGE_POLICY) { /*zmiana polityki */
         change_policy(h, r);
     }
 
