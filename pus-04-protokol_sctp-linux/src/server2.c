@@ -114,9 +114,8 @@ int accept_w(const int *fd, struct sockaddr_in *client_addr) {
 void sockopt_config(const int *fd) {
     struct sctp_initmsg initmsg;
 
-    initmsg.sinit_num_ostreams  = 3;
-    initmsg.sinit_max_instreams = 4;
-    initmsg.sinit_max_attempts  = 5;
+    initmsg.sinit_num_ostreams  = 2;
+    initmsg.sinit_max_instreams = 2;
 
     setsockopt(*fd, IPPROTO_SCTP, SCTP_INITMSG, &initmsg, sizeof(initmsg));
 }
