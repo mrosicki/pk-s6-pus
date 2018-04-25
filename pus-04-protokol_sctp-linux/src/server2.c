@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 }
 
 void send_messages(const int *fd, struct sockaddr_in *client_addr) {
-    time_t current_time;
+    time_t    current_time;
     struct tm *current_time_tm;
     char      time_buff[MESSAGE_SIZE];
     char      date_buff[MESSAGE_SIZE];
@@ -91,12 +91,12 @@ void send_messages(const int *fd, struct sockaddr_in *client_addr) {
     strcpy(message_date.message, date_buff);
 
     retval = sctp_sendmsg(*fd, &message_time, sizeof(message_t), (struct sockaddr *) client_addr, sizeof(*client_addr),
-                          (uint32_t) getpid(), 0, 0, 0, 0);
+                          0, 0, 0, 0, 0);
     test(retval, "send time error", false);
 
 
     retval = sctp_sendmsg(*fd, &message_date, sizeof(message_t), (struct sockaddr *) client_addr, sizeof(*client_addr),
-                          (uint32_t) getpid(), 0, 0, 0, 0);
+                          0, 0, 1, 0, 0);
     test(retval, "send date error", false);
 }
 

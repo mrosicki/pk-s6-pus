@@ -34,6 +34,8 @@ void print_conn_info(const int *fd);
 
 void handle_connection(const int *fd, struct sockaddr_in *server_addr);
 
+void sockopt_config(const int *fd);
+
 int main(int argc, char *argv[]) {
     int                port;
     int                buff[100];
@@ -56,6 +58,7 @@ int main(int argc, char *argv[]) {
     retval = inet_pton(AF_INET, server_ip, &server_addr.sin_addr);
     test(retval, "inet_pton()", true);
 
+    sockopt_config(&fd);
     connect_w(&fd, &server_addr);
     printf("Nawiązano połączenie z serwerem. Oczekiwanie na wiadomość\n");
     print_conn_info(&fd);
@@ -121,4 +124,13 @@ void test(int rval, const char *message, boolean kill) {
             exit(EXIT_FAILURE);
         }
     }
+}
+
+void sockopt_config(const int *fd) {
+    struct sctp_initmsg initmsg;
+
+    initmsg.sinit_num_ostreams  = 2;
+    initmsg.sinit_max_instreams = 2;
+
+    setsockopt(*fd, IPPROTO_SCTP, SCTP_INITMSG, &initmsg, sizeof(initmsg));
 }
