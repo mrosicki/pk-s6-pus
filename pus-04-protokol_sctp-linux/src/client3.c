@@ -108,12 +108,16 @@ void test(int rval, const char *message, boolean kill) {
 void sockopt_config(const int *fd) {
     struct sctp_initmsg         initmsg;
     struct sctp_event_subscribe events;
+
+
+    memset(&initmsg, 0, sizeof(initmsg));
     initmsg.sinit_num_ostreams  = MAX_STREAMS;
     initmsg.sinit_max_instreams = MAX_STREAMS;
     initmsg.sinit_max_attempts  = 5;
 
     setsockopt(*fd, IPPROTO_SCTP, SCTP_INITMSG, &initmsg, sizeof(initmsg));
 
+    memset(&events, 0, sizeof(events));
     events.sctp_data_io_event = 1;
     setsockopt(*fd, SOL_SCTP, SCTP_EVENTS, (const void *) &events, sizeof(events));
 }
