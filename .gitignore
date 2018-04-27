@@ -9,3 +9,5 @@ cmake-build-debug/
 *.o
 
 
+CMakeFiles/
+pus-04-protokol_sctp-linux/bin/
