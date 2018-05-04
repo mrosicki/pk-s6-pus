@@ -71,6 +71,7 @@ int main(int argc, char** argv) {
         perror("listen()");
         exit(EXIT_FAILURE);
     }
+    
 
     fprintf(stdout, "Server is listening for incoming connection...\n");
 
