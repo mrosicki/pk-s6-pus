@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
         perror("bind()");
         exit(EXIT_FAILURE);
     }
-
+ 
     /* Przeksztalcenie gniazda w gniazdo nasluchujace: */
     if (listen(listenfd, 2) == -1) {
         perror("listen()");
