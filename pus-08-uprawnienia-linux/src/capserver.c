@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
     unsigned int    port_number;
 
     cap_t           capabilities;
-
+    cap_value_t cap_list[1]={CAP_NET_BIND_SERVICE};
     if (argc != 2) {
         fprintf(stderr, "Invocation: %s <PORT>\n", argv[0]);
         exit(EXIT_FAILURE);
@@ -58,21 +58,24 @@ int main(int argc, char** argv) {
     server_addr.sin_port            =       htons(port_number);
     /* Rozmiar struktury adresowej serwera w bajtach: */
     server_addr_len                 =       sizeof(server_addr);
-
+    capabilities = cap_get_proc();
+    cap_set_flag(capabilities,CAP_EFFECTIVE,1,cap_list,CAP_SET);
+    cap_set_proc(capabilities);
     fprintf(stdout, "Binding to port %u...\n", port_number);
     /* Powiazanie "nazwy" (adresu IP i numeru portu) z gniazdem: */
     if (bind(listenfd, (struct sockaddr*) &server_addr, server_addr_len) == -1) {
         perror("bind()");
         exit(EXIT_FAILURE);
     }
- 
+    
     /* Przeksztalcenie gniazda w gniazdo nasluchujace: */
     if (listen(listenfd, 2) == -1) {
         perror("listen()");
         exit(EXIT_FAILURE);
     }
-    
-
+    cap_clear(capabilities);
+    cap_set_proc(capabilities);
+    cap_free(capabilities);
     fprintf(stdout, "Server is listening for incoming connection...\n");
 
     /* Funkcja pobiera polaczenie z kolejki polaczen oczekujacych na zaakceptowanie
@@ -83,13 +86,7 @@ int main(int argc, char** argv) {
         perror("accept()");
         exit(EXIT_FAILURE);
     }
-    capabilities = cap_init();
-    cap_clear_flag(capabilities,CAP_EFFECTIVE);
-    cap_clear_flag(capabilities,CAP_INHERITABLE);
-    cap_clear_flag(capabilities,CAP_PERMITTED);
-    cap_clear(capabilities);
-    retval = cap_set_proc(capabilities);
-    cap_free(capabilities);
+;
     if (retval != 0) {
         perror("cap_set_proc()");
         exit(EXIT_FAILURE);
