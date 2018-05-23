@@ -69,6 +69,7 @@ void callback(u_char *arg, const struct pcap_pkthdr *pkt_header, const u_char *p
         break;
     default:
         return;
+        
     }
 
     fprintf(stdout, "\n");
