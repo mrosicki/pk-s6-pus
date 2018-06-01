@@ -9,3 +9,5 @@ project(pus)
 #add_subdirectory(pus-08-uprawnienia-linux)
 #add_subdirectory(pus-11-libpcap)
 add_subdirectory(pus-12-ssh)
+#add_subdirectory(pus-09-kryptografia-openssl)
+
