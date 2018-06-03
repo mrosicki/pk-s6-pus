@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
      * Zdefiniowanie sciezki do katalogu domowego uzytkownika.
      * !!! Moze wymagac modyfikacji !!!
      */
-    strcpy(dir, "/home/");
+    strcpy(dir, "/home/tele-15/");
     strcat(dir, cd->username);
 
     /* Pobranie uchwytu SFTP do zdalnego katalogu. */
