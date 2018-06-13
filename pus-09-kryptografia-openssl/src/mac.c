@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
      * Usuwa wszystkie informacje z kontekstu i zwalnia pamiec zwiazana
      * z kontekstem:
      */
-    HMAC_cleanup(hctx);
+    HMAC_CTX_cleanup(hctx);
 
     /* Usuniecie nazw funkcji skrotu z pamieci. */
     EVP_cleanup();
