@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
     int i, tmp;
 
     /* Wiadomosc do zaszfrowania: */
-    char plaintext[80] = "MESSAGE_MESSAGE_MESSAGE_MESSAGE_";
+    char plaintext[80] = "MESSAGE_MESSAGE_MESSAGE_MESSAGE_a";
 
     /* Bufor na szyfrogram: */
     unsigned char ciphertext[80];
