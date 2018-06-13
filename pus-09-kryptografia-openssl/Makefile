@@ -6,7 +6,7 @@ CC = gcc
 CFLAGS = -O2 -pedantic -Wall
 
 all: cipher_ecb cipher_cbc cipher_bio digest mac client server \
-     client_mod server_mod rsa client_rsa server_rsa
+     rsa client_rsa server_rsa
 
 clean:
 	@rm -rf $(BINDIR)/*
@@ -39,33 +39,21 @@ digest.o: $(SRCDIR)/digest.c
 	$(CC) $(CFLAGS) -c $(SRCDIR)/$(basename $@).c -o $(BINDIR)/$(basename $@).o
 
 mac: mac.o
-	$(CC) $(CFLAGS) $(BINDIR)/$@.o -lssl -o $(BINDIR)/$@
+	$(CC) $(CFLAGS) $(BINDIR)/$@.o -lssl -lcrypto -o $(BINDIR)/$@
 
 mac.o: $(SRCDIR)/mac.c
 	$(CC) $(CFLAGS) -c $(SRCDIR)/$(basename $@).c -o $(BINDIR)/$(basename $@).o
 
 client: client.o
-	$(CC) $(CFLAGS) $(BINDIR)/$@.o -o $(BINDIR)/$@
+	$(CC) $(CFLAGS) $(BINDIR)/$@.o -lssl -lcrypto -o $(BINDIR)/$@
 
 client.o: $(SRCDIR)/client.c
 	$(CC) $(CFLAGS) -c $(SRCDIR)/$(basename $@).c -o $(BINDIR)/$(basename $@).o
 
 server: server.o
-	$(CC) $(CFLAGS) $(BINDIR)/$@.o -o $(BINDIR)/$@
+	$(CC) $(CFLAGS) $(BINDIR)/$@.o -lcrypto -lssl -o $(BINDIR)/$@
 
 server.o: $(SRCDIR)/server.c
-	$(CC) $(CFLAGS) -c $(SRCDIR)/$(basename $@).c -o $(BINDIR)/$(basename $@).o
-
-client_mod: client_mod.o
-	$(CC) $(CFLAGS) $(BINDIR)/$@.o -lcrypto -lssl -o $(BINDIR)/$@
-
-client_mod.o: $(SRCDIR)/client_mod.c
-	$(CC) $(CFLAGS) -c $(SRCDIR)/$(basename $@).c -o $(BINDIR)/$(basename $@).o
-
-server_mod: server_mod.o
-	$(CC) $(CFLAGS) $(BINDIR)/$@.o -lcrypto -lssl -o $(BINDIR)/$@
-
-server_mod.o: $(SRCDIR)/server_mod.c
 	$(CC) $(CFLAGS) -c $(SRCDIR)/$(basename $@).c -o $(BINDIR)/$(basename $@).o
 
 rsa: rsa.o

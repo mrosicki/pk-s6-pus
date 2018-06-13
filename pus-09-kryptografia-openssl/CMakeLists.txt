@@ -14,7 +14,7 @@ add_executable(zad04-digest src/digest.c)
 target_link_libraries(zad04-digest crypto)
 
 add_executable(zad05-mac src/mac.c)
-target_link_libraries(zad05-mac ssl)
+target_link_libraries(zad05-mac ssl crypto)
 
 add_executable(zad06-server src/server.c)
 target_link_libraries(zad06-server ssl crypto)
